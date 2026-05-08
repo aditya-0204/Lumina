@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AuditForm } from './components/AuditForm'
 import { AuditResults } from './components/AuditResults'
 import { LandingPage } from './pages/LandingPage'
+import { calculateAudit } from './services/auditService'
 
 function App() {
   const [showAudit, setShowAudit] = useState(false)
@@ -13,22 +14,17 @@ function App() {
     setResults(null)
   }
 
-  const handleAuditSubmit = async (data) => {
+  const handleAuditSubmit = (data) => {
     setAuditData(data)
-    // Call audit engine
-    const response = await calculateAudit(data)
-    setResults(response)
+    // Calculate audit results immediately
+    const auditResults = calculateAudit(data)
+    setResults(auditResults)
   }
 
   const handleBackHome = () => {
     setShowAudit(false)
     setAuditData(null)
     setResults(null)
-  }
-
-  async function calculateAudit(data) {
-    // Placeholder - will be implemented in Day 2
-    return {}
   }
 
   if (!showAudit) {
