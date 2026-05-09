@@ -1,14 +1,13 @@
 # Lumina - AI Spending Optimizer
 
-A free web tool that audits your team's AI tool spending and surfaces optimization opportunities. Built for startup founders and engineering managers who want to understand their AI infrastructure costs.
+Lumina is a lightweight web app for reviewing AI software spend and spotting savings opportunities. It is aimed at startup teams that want a quick view of current spend, better-fitting plans, and cheaper alternatives.
 
 ## What it does
 
-1. **Input your AI tools**: Cursor, Claude, ChatGPT, GitHub Copilot, Gemini, Windsurf, and APIs
-2. **Get instant audit**: See where you're overspending and what alternatives exist
-3. **Find savings**: Get personalized recommendations with realistic migration paths
-4. **Share results**: Unique URL for your team to review and discuss
-5. **Optional**: Book Credex consultation for high-savings cases
+1. Collects the team's current AI stack, plans, spend, seats, team size, and use case
+2. Calculates total monthly and annual spend
+3. Suggests cheaper plans or tool substitutions where they make sense
+4. Shows a short written summary and lets users save the audit details
 
 ## Quick Start
 
@@ -21,73 +20,31 @@ npm install
 ```bash
 npm run dev
 ```
-Open http://localhost:3000
 
-### Deploy
+### Validate
 ```bash
+npm run lint
+npm run test -- --run
 npm run build
-npm run preview
-# Deploy the dist/ folder to Vercel, Netlify, or similar
 ```
 
-## Screenshots & Demo
-[Demo video link - coming after Day 3]
+## Stack
 
-## Tech Stack
+- React 18
+- Vite
+- Tailwind CSS
+- Small client-side service modules for pricing, audit logic, summaries, and lead capture
 
-- **Frontend**: React 18 + Vite + Tailwind CSS
-- **Backend Services**: Node.js with service module pattern
-- **Database**: Supabase
-- **AI**: Anthropic Claude API
-- **Email**: Resend
-- **Deployment**: Vercel
+## Current Progress
 
-## Key Decisions
+- Day 1: project setup, landing page, base structure
+- Day 2: audit form, pricing constants, validation, local persistence
+- Day 3: audit engine, results page, audit tests
+- Day 4: summary section, lead capture flow, additional service tests
 
-1. **Vite over Create React App**: Faster dev experience, smaller bundle, instant HMR
-2. **Zustand over Redux**: Simpler state management for this scope
-3. **Service modules pattern**: Clean separation of audit logic, API calls, and data processing
-4. **Tailwind CSS**: Rapid UI development with accessibility first
-5. **Supabase**: Free tier sufficient for lead capture, real-time capable, PostgreSQL underneath
+## Key Files
 
-## Development Timeline
-
-- **Day 1** (May 7): Project setup, landing page, basic structure
-- **Day 2** (May 8): Spend input form, pricing data structure
-- **Day 3** (May 9): Audit engine logic, results page
-- **Day 4** (May 10): LLM integration, lead capture
-- **Day 5** (May 11): Shareable URLs, tests, CI
-- **Day 6** (May 12): User interviews, deployment
-- **Day 7** (May 13): Final polish, submission
-
-## Files Overview
-
-- `README.md` (this file) - Project overview
-- `ARCHITECTURE.md` - System design and data flow
-- `DEVLOG.md` - Daily work log with learnings
-- `REFLECTION.md` - Technical depth and decision-making
-- `TESTS.md` - Test suite documentation
-- `PRICING_DATA.md` - All pricing sources
-- `PROMPTS.md` - LLM prompts used
-- `GTM.md` - Go-to-market strategy
-- `ECONOMICS.md` - Unit economics
-- `USER_INTERVIEWS.md` - User research
-- `LANDING_COPY.md` - Landing page copy
-- `METRICS.md` - Key metrics and North Star
-
-## Running Tests
-
-```bash
-npm test
-```
-
-## Deployed URL
-[Live link - coming after Day 5]
-
-## License
-
-Credex © 2026. Code is public; you're free to use it for your portfolio.
-
----
-
-Built with dedication over 7 days by a Credex intern candidate. May 7-13, 2026.
+- `ARCHITECTURE.md`: current app structure and next backend steps
+- `DEVLOG.md`: daily progress notes
+- `TESTS.md`: test coverage notes
+- `PROMPTS.md`: summary-writing notes

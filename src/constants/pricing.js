@@ -35,7 +35,7 @@ export const PRICING = {
     'Pay-as-you-go': {
       monthly: 0,
       annual: 0,
-      note: '$0.50 per 1M input tokens, $1.50 per 1M output tokens (GPT-4 tier placeholder)',
+      note: '$0.50 per 1M input tokens, $1.50 per 1M output tokens (reference GPT-4 tier)',
     },
   },
   gemini: {

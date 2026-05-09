@@ -3,21 +3,26 @@ import { AuditForm } from './components/AuditForm'
 import { AuditResults } from './components/AuditResults'
 import { LandingPage } from './pages/LandingPage'
 import { calculateAudit } from './services/auditService'
+import { generateExecutiveSummary } from './services/summaryService'
 
 function App() {
   const [showAudit, setShowAudit] = useState(false)
   const [auditData, setAuditData] = useState(null)
   const [results, setResults] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleStartAudit = () => {
     setShowAudit(true)
     setResults(null)
   }
 
-  const handleAuditSubmit = (data) => {
+  const handleAuditSubmit = async (data) => {
+    setIsSubmitting(true)
     setAuditData(data)
     const auditResults = calculateAudit(data)
-    setResults(auditResults)
+    const executiveSummary = await generateExecutiveSummary(auditResults, data)
+    setResults({ ...auditResults, executiveSummary })
+    setIsSubmitting(false)
   }
 
   const handleEditAudit = () => {
@@ -28,6 +33,7 @@ function App() {
     setShowAudit(false)
     setAuditData(null)
     setResults(null)
+    setIsSubmitting(false)
   }
 
   if (!showAudit) {
@@ -38,7 +44,7 @@ function App() {
     return <AuditResults data={results} auditData={auditData} onBack={handleBackHome} onEdit={handleEditAudit} />
   }
 
-  return <AuditForm onSubmit={handleAuditSubmit} />
+  return <AuditForm onSubmit={handleAuditSubmit} onBack={handleBackHome} isSubmitting={isSubmitting} />
 }
 
 export default App

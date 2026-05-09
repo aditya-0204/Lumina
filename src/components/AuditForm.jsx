@@ -41,7 +41,7 @@ const normalizeLoadedForm = (savedForm) => {
   }
 }
 
-export function AuditForm({ onSubmit }) {
+export function AuditForm({ onSubmit, onBack, isSubmitting = false }) {
   const [formData, setFormData] = useState(createEmptyForm)
   const [errors, setErrors] = useState({})
   const [isHydrated, setIsHydrated] = useState(false)
@@ -153,7 +153,14 @@ export function AuditForm({ onSubmit }) {
       <div className="mx-auto max-w-5xl px-6">
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-credex-dark/70">Day 2 Intake</p>
+            <button
+              type="button"
+              onClick={onBack}
+              className="mb-4 text-sm font-medium text-credex-dark transition hover:text-emerald-700"
+            >
+              Back to Home
+            </button>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-credex-dark/70">Audit Intake</p>
             <h1 className="mb-2 text-4xl font-bold text-slate-900">Analyze Your Spending</h1>
             <p className="max-w-2xl text-lg text-slate-600">
               Tell us which AI tools your team pays for, the plan you are on, and what you spend each month.
@@ -361,9 +368,10 @@ export function AuditForm({ onSubmit }) {
               <div className="mt-6 flex flex-col gap-3">
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full rounded-xl bg-credex-light px-4 py-3 text-lg font-semibold text-black transition hover:bg-emerald-600"
                 >
-                  Get Your Audit Results
+                  {isSubmitting ? 'Generating Your Audit...' : 'Get Your Audit Results'}
                 </button>
                 <button
                   type="button"
