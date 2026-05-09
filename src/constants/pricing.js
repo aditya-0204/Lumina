@@ -1,6 +1,3 @@
-// Centralized pricing data used by the form and audit services.
-// Updated: 2026-05-08
-
 export const PRICING = {
   cursor: {
     Hobby: { monthly: 0, annual: 0 },

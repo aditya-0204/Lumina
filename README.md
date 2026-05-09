@@ -1,4 +1,4 @@
-# SpendAudit - AI Spending Optimizer
+# Lumina - AI Spending Optimizer
 
 A free web tool that audits your team's AI tool spending and surfaces optimization opportunities. Built for startup founders and engineering managers who want to understand their AI infrastructure costs.
 

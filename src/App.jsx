@@ -16,9 +16,12 @@ function App() {
 
   const handleAuditSubmit = (data) => {
     setAuditData(data)
-    // Calculate audit results immediately
     const auditResults = calculateAudit(data)
     setResults(auditResults)
+  }
+
+  const handleEditAudit = () => {
+    setResults(null)
   }
 
   const handleBackHome = () => {
@@ -32,7 +35,7 @@ function App() {
   }
 
   if (results) {
-    return <AuditResults data={results} auditData={auditData} onBack={handleBackHome} />
+    return <AuditResults data={results} auditData={auditData} onBack={handleBackHome} onEdit={handleEditAudit} />
   }
 
   return <AuditForm onSubmit={handleAuditSubmit} />

@@ -1,7 +1,7 @@
 {
-  "name": "spendaudit",
+  "name": "lumina",
   "version": "1.0.0",
-  "description": "AI Spend Audit Tool - Optimize your AI tool spending",
+  "description": "Lumina - Optimize your AI tool spending",
   "type": "module",
   "scripts": {
     "dev": "vite",

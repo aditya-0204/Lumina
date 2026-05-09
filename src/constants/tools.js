@@ -1,4 +1,3 @@
-// AI Tools Configuration
 export const TOOLS = {
   cursor: {
     name: 'Cursor',
@@ -67,4 +66,4 @@ export const TEAM_SIZE_RANGES = [
   { label: '50+', value: 'enterprise' },
 ]
 
-export const FORM_STORAGE_KEY = 'credex.auditForm.v1'
+export const FORM_STORAGE_KEY = 'lumina.auditForm.v1'

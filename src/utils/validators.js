@@ -1,5 +1,3 @@
-// Form validation logic
-
 export const validateAuditForm = (formData) => {
   const errors = {}
 

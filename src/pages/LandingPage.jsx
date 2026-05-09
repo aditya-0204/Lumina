@@ -3,7 +3,7 @@ export function LandingPage({ onStartAudit }) {
     <div className="min-h-screen bg-gradient-to-br from-credex-dark via-slate-900 to-credex-dark text-white">
       <nav className="sticky top-0 z-40 border-b border-slate-700/50 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <h1 className="text-2xl font-bold text-credex-light">SpendAudit</h1>
+          <h1 className="text-2xl font-bold text-credex-light">Lumina</h1>
           <a href="#" className="text-slate-300 transition hover:text-white">
             About
           </a>
