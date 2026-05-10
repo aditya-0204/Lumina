@@ -31,6 +31,12 @@ Covers:
 - payload construction with audit context
 - localStorage persistence behavior
 
+### `src/services/shareService.test.js`
+Covers:
+- shareable audit snapshot storage
+- shared audit retrieval by ID
+- share URL creation
+
 ### `src/utils/validators.test.js`
 Covers:
 - required audit form fields
@@ -39,14 +45,14 @@ Covers:
 
 ## Current Coverage Notes
 
-- Core service logic for pricing, audit, summary, lead capture, and validation is covered
+- Core service logic for pricing, audit, summary, lead capture, sharing, and validation is covered
 - UI component rendering tests are not added yet
-- Shareable URL logic is not implemented yet, so no share-service tests exist yet
+- Shared audits are tested at the service layer, not the component layer
 - Future Supabase integration will need API-layer or integration tests
 
 ## Recommended Next Tests
 
 1. Component tests for `AuditForm.jsx`
 2. Component tests for `AuditResults.jsx`
-3. Share-service tests once shareable URLs exist
-4. Integration tests for Supabase-backed lead persistence
+3. Integration tests for Supabase-backed lead persistence
+4. Integration tests for persisted shared audits

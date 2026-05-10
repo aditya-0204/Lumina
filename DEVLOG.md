@@ -65,7 +65,7 @@
 - A test case initially assumed the cross-vendor recommendation would always win, but the actual ranking logic correctly preferred the highest-savings candidate
 
 **Plan for next day:**
-- Add executive summary generation and lead capture
+- Add summary generation and lead capture
 
 ---
 
@@ -88,11 +88,32 @@
 - Supabase and transactional email are still pending, so the current implementation stores lead data locally only
 
 **Plan for next day:**
-- Connect persistence to Supabase, add shareable URLs, and keep expanding test coverage
+- Add share links and keep expanding test coverage
 
 ---
 
-## Day 5 - To be filled
+## Day 5 - May 10, 2026
+
+**Hours worked:** 3
+
+**What I did:**
+- Added a share service for saving PII-safe audit snapshots
+- Added share-link creation from the results page
+- Added URL-based shared audit loading in the app shell
+- Added tests for the share service
+- Re-ran lint, tests, and production build after the share flow changes
+
+**What I learned:**
+- Keeping shared snapshots separate from lead data makes it easier to control what is safe to expose
+- URL-driven state is simple to add when the shared payload is already normalized
+
+**Blockers:**
+- Shared audits still live in browser storage, so links are only durable on the same machine until backend persistence is added
+
+**Plan for next day:**
+- Move saved audits and shared audits to Supabase-backed persistence
+
+---
 
 ## Day 6 - To be filled
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { buildLeadPayload, saveLeadCapture, validateLeadForm } from '../services/leadCaptureService'
+import { buildShareUrl, saveShareableAudit } from '../services/shareService'
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-US', {
@@ -32,6 +33,9 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
   const [leadForm, setLeadForm] = useState(createLeadForm)
   const [leadErrors, setLeadErrors] = useState({})
   const [leadStatus, setLeadStatus] = useState('idle')
+  const [shareStatus, setShareStatus] = useState('idle')
+
+  const toolCount = data.toolCount ?? Object.keys(auditData?.tools || {}).length
 
   const handleLeadChange = (field, value) => {
     setLeadForm((prev) => ({ ...prev, [field]: value }))
@@ -53,6 +57,22 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
     setLeadForm(createLeadForm())
   }
 
+  const handleShare = async () => {
+    const shareId = saveShareableAudit(data, auditData || { tools: {} })
+    const shareUrl = buildShareUrl(shareId, window.location.origin)
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+      }
+      setShareStatus('copied')
+      return
+    } catch {
+      setShareStatus('ready')
+      return
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 py-12 text-white">
       <div className="mx-auto max-w-6xl px-6">
@@ -63,6 +83,12 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
             <p className="mt-3 max-w-2xl text-slate-300">{data.summary}</p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <button
+              onClick={handleShare}
+              className="rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+            >
+              Create Share Link
+            </button>
             <button
               onClick={onEdit}
               className="rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
@@ -77,6 +103,14 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
             </button>
           </div>
         </div>
+
+        {shareStatus !== 'idle' && (
+          <div className="mb-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+            {shareStatus === 'copied'
+              ? 'Share link copied to your clipboard.'
+              : 'Share link created. You can copy it from the browser address bar after opening it.'}
+          </div>
+        )}
 
         <section className="grid gap-4 md:grid-cols-4">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
@@ -93,7 +127,7 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
           </div>
           <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
             <p className="text-sm text-slate-400">Audit Scope</p>
-            <p className="mt-3 text-lg font-semibold">{Object.keys(auditData.tools).length} tools</p>
+            <p className="mt-3 text-lg font-semibold">{toolCount} tools</p>
             <p className="mt-1 text-sm text-slate-400">
               {formatRangeLabel(data.teamSize.range)} • {data.useCase}
             </p>
