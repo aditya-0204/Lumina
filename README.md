@@ -43,6 +43,7 @@ npm run build
 - Day 3: audit engine, results page, audit tests
 - Day 4: summary section, lead capture flow, additional service tests
 - Day 5: PII-safe share links and shared audit loading
+- Day 6: landing-page polish, metadata cleanup, visual refinement
 
 ## Key Files
 

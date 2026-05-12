@@ -2,7 +2,7 @@
 
 ## Current App Structure
 
-Lumina is currently a React application with most business logic kept in small service modules. The app now supports the path from landing page to audit form to results page, plus saved leads and local shareable audit snapshots.
+Lumina is currently a React application with most business logic kept in small service modules. The app supports the full path from landing page to audit form to results page, plus saved leads, shareable audit snapshots, and a more polished public-facing landing experience.
 
 ## Flow
 
@@ -55,6 +55,7 @@ src/
 - No database persistence yet
 - No email delivery yet
 - Share links work through browser storage only, not server persistence
+- Metadata and landing polish are improved, but deployment-specific monitoring is not added yet
 
 ## Likely Next Steps
 
@@ -62,3 +63,4 @@ src/
 2. Persist shared audits outside the browser
 3. Add email delivery for saved summaries
 4. Add API routes for summary generation, lead storage, and share retrieval
+5. Add deployment configuration and post-deploy smoke checks

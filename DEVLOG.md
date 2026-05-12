@@ -111,10 +111,31 @@
 - Shared audits still live in browser storage, so links are only durable on the same machine until backend persistence is added
 
 **Plan for next day:**
-- Move saved audits and shared audits to Supabase-backed persistence
+- Improve the public-facing experience and keep the project ready for deployment
 
 ---
 
-## Day 6 - To be filled
+## Day 6 - May 12, 2026
+
+**Hours worked:** 3
+
+**What I did:**
+- Updated app metadata for the Lumina name and current product description
+- Refined the visual system with stronger typography and background treatment
+- Rebuilt the landing page with a clearer hero, sample snapshot, and stronger explanation of the product flow
+- Cleaned the results page presentation and fixed lingering text rendering issues
+- Re-ran lint, tests, and production build after the polish pass
+
+**What I learned:**
+- The first screen needs to communicate trust and clarity immediately, especially for a finance-oriented tool
+- Metadata and naming consistency matter because small leftover details can make the product feel unfinished
+
+**Blockers:**
+- Deployment has not been configured yet, so the app is polished but not published
+
+**Plan for next day:**
+- Finalize deployment prep, run a last documentation pass, and do submission cleanup
+
+---
 
 ## Day 7 - To be filled
