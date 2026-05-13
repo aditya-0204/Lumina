@@ -55,4 +55,49 @@ describe('calculateAudit', () => {
     expect(result.tools[0].recommendationType).toBe('keep')
     expect(result.tools[0].recommendedMonthlySpend).toBe(20)
   })
+
+  it('aggregates monthly and annual savings across multiple tools', () => {
+    const result = calculateAudit({
+      teamSize: 'small',
+      useCase: 'Coding',
+      tools: {
+        chatgpt: {
+          plan: 'Team',
+          spend: 120,
+          seats: 4,
+        },
+        copilot: {
+          plan: 'Individual',
+          spend: 60,
+          seats: 5,
+        },
+      },
+    })
+
+    expect(result.totalMonthlySpend).toBe(180)
+    expect(result.totalMonthlySavings).toBeGreaterThan(0)
+    expect(result.totalAnnualSavings).toBe(result.totalMonthlySavings * 12)
+  })
+
+  it('sorts the biggest savings opportunities first', () => {
+    const result = calculateAudit({
+      teamSize: 'small',
+      useCase: 'Coding',
+      tools: {
+        chatgpt: {
+          plan: 'Team',
+          spend: 120,
+          seats: 4,
+        },
+        copilot: {
+          plan: 'Individual',
+          spend: 60,
+          seats: 5,
+        },
+      },
+    })
+
+    expect(result.tools[0].monthlySavings).toBeGreaterThanOrEqual(result.tools[1].monthlySavings)
+    expect(result.recommendations[0].monthlySavings).toBeGreaterThanOrEqual(result.recommendations[1].monthlySavings)
+  })
 })

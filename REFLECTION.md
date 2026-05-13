@@ -1,30 +1,31 @@
 # REFLECTION - Lumina
 
-*To be filled during final submission week. This file documents technical depth, decision-making, and learnings.*
-
 ## 1. Hardest Bug & Debug Process
-(150-400 words, fill this after Day 5)
+
+The hardest issue was not a dramatic runtime crash. It was the combination of small reliability problems that appeared once the project moved beyond the happy-path browser demo. Early on, the app looked fine locally, but GitHub Actions was still failing. That turned out to be a lockfile issue: the repo was ignoring `package-lock.json`, which meant `npm ci` failed in CI even though local `npm install` had already worked. Later, I ran into a different class of issue where a test expectation looked reasonable at first glance, but the actual audit engine behavior was correct and the test was wrong. That forced me to separate three things that are easy to blur together: implementation bugs, environment bugs, and assumption bugs.
+
+My debugging process improved a lot because of that. Instead of guessing, I started checking each layer independently: repository status, workflow assumptions, build output, service logic, and test expectations. That approach helped me avoid “fixes” that only moved the problem around. The biggest lesson was that finishing a project is not just about adding features. A tool like this has to be trustworthy across local development, CI, and eventual deployment. In a product that makes cost recommendations, reliability is part of the user experience, not just an engineering detail.
 
 ## 2. Decision I Reversed Mid-Week
-(150-400 words, fill this after Day 4)
+
+The biggest decision I reversed was how strongly I wanted to block on live infrastructure before moving forward with the product experience. My first instinct was to wait until Supabase storage, server-side summary generation, share persistence, and email delivery were all connected before I treated the results flow as “real.” That would have been architecturally cleaner, but it would also have slowed down the main product loop and left me with less time to improve the actual user experience.
+
+Mid-week, I changed that approach. I decided to ship the product flow first and keep the infrastructure edges modular so the live integrations could be slotted in later. That is why the app first gained local persistence, a clean audit engine, and a full results page before the API routes were added. In hindsight, that was the right call for this assignment. It let me validate the product shape quickly while still keeping the code organized enough for backend work afterward. The reversal taught me that good sequencing matters as much as good technical taste. A coherent, testable product slice is often more valuable than waiting for every external integration to be perfect before anything feels complete.
 
 ## 3. Week 2 Features
-(150-400 words, fill this at the end)
-If I had unlimited time, I would build:
+
+If I had another full week, the first priority would be finishing the live multi-user infrastructure and then measuring how people actually use it. The codebase is now prepared for Supabase, Anthropic, and Resend, but the next real milestone would be turning those prepared integrations into a deployed, monitored workflow. That means live share links that work across devices, real audit and lead storage, confirmation emails, and analytics on where people drop off.
+
+After that, I would focus on product depth rather than just plumbing. The strongest candidate is a benchmark view that compares the user’s spend profile with similar startups by team size and use case. That came up naturally from the assignment framing and would make the output feel more defensible. I would also add invoice-assisted input so teams can start from billing details rather than manually typing estimates, and I would improve result quality by handling API credits and mixed seat models more precisely. Those features would move Lumina from “useful prototype” toward something that could genuinely support a finance or procurement conversation inside a company.
 
 ## 4. How I Used AI Tools
-(150-400 words, fill this at the end)
-- Which tools (Claude, ChatGPT, Copilot)
-- What tasks
-- What I didn't trust
-- One specific time AI was wrong
 
-## 5. Self-Rating (1-10 scale)
-(One sentence each)
+I used AI tools as accelerators for structure, iteration, and cleanup, not as an unquestioned source of truth. They were most helpful when I needed to move quickly from an idea to a first draft, especially for component structure, service boundaries, test scaffolding, and written documentation. AI was also useful when comparing multiple implementation directions. It helped reduce blank-page time and made it easier to keep momentum during a short project window.
 
-- **Discipline:** ? (Did I commit consistently across 5+ days?)
-- **Code Quality:** ? (Readability, abstraction, types)
-- **Design Sense:** ? (UI polish, accessibility, UX flow)
-- **Problem-Solving:** ? (Debugging ability, trade-off thinking)
-- **Entrepreneurial Thinking:** ? (User focus, GTM, metrics)
+Where I did not rely on AI was on final correctness. Pricing assumptions, recommendation ranking, CI configuration, and test expectations all needed manual verification. One of the clearest examples was the audit-engine test that assumed a particular recommendation should win, when the actual savings logic showed otherwise. That experience reinforced the practical boundary I tried to maintain throughout the project: AI can help generate options and save time, but trust still comes from reading the code, checking the numbers, and running the app. For a product that claims to audit spend, being slightly wrong in a confident way is worse than being simpler and verified. That made manual review and automated tests essential companions to any AI-assisted drafting.
 
+## 5. Self-Rating (1-10 Scale)
+
+If I rate the week honestly, I would give myself a 9/10 for discipline, 8/10 for code quality, 8/10 for design sense, 8/10 for problem-solving, and 8/10 for entrepreneurial thinking. The strongest part of the project was follow-through. The repo now has a consistent product flow, multiple test files, CI, deployment config, API scaffolding, and the full documentation set. I stayed focused on shipping the assignment rather than over-engineering it.
+
+The code quality is good for the time frame, mainly because the service boundaries stayed clean and the recommendation logic is testable in isolation. I would not call it a 10 because the live infrastructure still depends on external configuration, and there are obvious next steps around integration testing and richer pricing logic. Design-wise, the final landing and results pages feel intentional and much more trustworthy than the initial scaffold. Entrepreneurially, I think the product stays grounded in a real user problem: teams do overspend on AI tools, and they need a quick, shareable explanation of what to change. Overall, I am proud of the balance between speed, clarity, and restraint.

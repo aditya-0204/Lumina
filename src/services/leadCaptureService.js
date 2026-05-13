@@ -41,3 +41,32 @@ export const saveLeadCapture = (payload) => {
   window.localStorage.setItem(LEAD_CAPTURE_STORAGE_KEY, JSON.stringify(leads))
   return payload
 }
+
+export const submitLeadCapture = async (payload, auditResults) => {
+  if (typeof fetch !== 'function') {
+    saveLeadCapture(payload)
+    return { mode: 'local' }
+  }
+
+  try {
+    const response = await fetch('/api/leads', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        lead: payload,
+        auditResults,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Lead submission failed')
+    }
+
+    return response.json()
+  } catch {
+    saveLeadCapture(payload)
+    return { mode: 'local' }
+  }
+}

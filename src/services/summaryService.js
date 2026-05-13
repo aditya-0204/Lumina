@@ -10,6 +10,8 @@ const getPrimaryOpportunity = (auditResults) => {
   return auditResults.tools.find((tool) => tool.monthlySavings > 0) ?? auditResults.tools[0]
 }
 
+const canUseApi = () => typeof fetch === 'function'
+
 export const buildFallbackSummary = (auditResults, auditData) => {
   const primaryOpportunity = getPrimaryOpportunity(auditResults)
   const toolCount = Object.keys(auditData.tools).length
@@ -31,7 +33,43 @@ export const buildFallbackSummary = (auditResults, auditData) => {
 export const generateExecutiveSummary = async (auditResults, auditData) => {
   const content = buildFallbackSummary(auditResults, auditData)
 
-  return {
-    content,
+  if (!canUseApi()) {
+    return {
+      content,
+      source: 'template',
+    }
+  }
+
+  try {
+    const response = await fetch('/api/summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        auditResults,
+        auditData,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Summary request failed')
+    }
+
+    const payload = await response.json()
+
+    if (!payload.content?.trim()) {
+      throw new Error('Summary response was empty')
+    }
+
+    return {
+      content: payload.content,
+      source: payload.source ?? 'api',
+    }
+  } catch {
+    return {
+      content,
+      source: 'template',
+    }
   }
 }

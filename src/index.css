@@ -44,3 +44,14 @@ select,
 textarea {
   font: inherit;
 }
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  button {
+    display: none !important;
+  }
+}

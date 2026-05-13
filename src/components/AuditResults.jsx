@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { buildLeadPayload, saveLeadCapture, validateLeadForm } from '../services/leadCaptureService'
-import { buildShareUrl, saveShareableAudit } from '../services/shareService'
+import { buildLeadPayload, submitLeadCapture, validateLeadForm } from '../services/leadCaptureService'
+import { createShareableAuditLink } from '../services/shareService'
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-US', {
@@ -36,12 +36,14 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
   const [shareStatus, setShareStatus] = useState('idle')
 
   const toolCount = data.toolCount ?? Object.keys(auditData?.tools || {}).length
+  const isHighSavings = data.totalMonthlySavings > 500
+  const isLowSavings = data.totalMonthlySavings < 100
 
   const handleLeadChange = (field, value) => {
     setLeadForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleLeadSubmit = (event) => {
+  const handleLeadSubmit = async (event) => {
     event.preventDefault()
     const errors = validateLeadForm(leadForm)
 
@@ -50,26 +52,27 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
       return
     }
 
+    setLeadStatus('saving')
     const payload = buildLeadPayload(leadForm, data)
-    saveLeadCapture(payload)
+    const response = await submitLeadCapture(payload, data)
     setLeadErrors({})
-    setLeadStatus('saved')
+    setLeadStatus(response.mode === 'local' ? 'saved-local' : 'saved')
     setLeadForm(createLeadForm())
   }
 
   const handleShare = async () => {
-    const shareId = saveShareableAudit(data, auditData || { tools: {} })
-    const shareUrl = buildShareUrl(shareId, window.location.origin)
+    setShareStatus('creating')
+    const shareUrl = await createShareableAuditLink(data, auditData || { tools: {} }, window.location.origin)
+    window.history.replaceState({}, '', shareUrl)
 
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl)
       }
+
       setShareStatus('copied')
-      return
     } catch {
       setShareStatus('ready')
-      return
     }
   }
 
@@ -83,6 +86,12 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
             <p className="mt-3 max-w-2xl text-slate-300">{data.summary}</p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => window.print()}
+              className="rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+            >
+              Download PDF Brief
+            </button>
             <button
               onClick={handleShare}
               className="rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
@@ -108,7 +117,9 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
           <div className="mb-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
             {shareStatus === 'copied'
               ? 'Share link copied to your clipboard.'
-              : 'Share link created. You can copy it from the browser address bar after opening it.'}
+              : shareStatus === 'creating'
+                ? 'Creating your share link...'
+                : 'Share link created. You can copy it from the browser address bar after opening it.'}
           </div>
         )}
 
@@ -129,9 +140,38 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
             <p className="text-sm text-slate-400">Audit Scope</p>
             <p className="mt-3 text-lg font-semibold">{toolCount} tools</p>
             <p className="mt-1 text-sm text-slate-400">
-              {formatRangeLabel(data.teamSize.range)} • {data.useCase}
+              {formatRangeLabel(data.teamSize.range)} / {data.useCase}
             </p>
           </div>
+        </section>
+
+        <section className="mt-8 rounded-[2rem] border border-white/10 bg-white/5 p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">Recommended Next Step</p>
+          {isHighSavings ? (
+            <>
+              <h2 className="mt-4 text-2xl font-semibold">This is large enough to justify a Credex consultation</h2>
+              <p className="mt-3 max-w-3xl text-slate-300">
+                Lumina found more than {formatCurrency(500)} in monthly savings. That usually means there is enough seat
+                waste, plan mismatch, or tool overlap to justify a deeper procurement review.
+              </p>
+            </>
+          ) : isLowSavings ? (
+            <>
+              <h2 className="mt-4 text-2xl font-semibold">Your stack already looks fairly disciplined</h2>
+              <p className="mt-3 max-w-3xl text-slate-300">
+                Lumina found limited immediate savings, which is often a good sign. The best next move is to keep a light
+                monthly review in place and watch for seat growth, duplicate tools, or pricing changes.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="mt-4 text-2xl font-semibold">A focused cleanup pass should pay off quickly</h2>
+              <p className="mt-3 max-w-3xl text-slate-300">
+                The savings identified here are meaningful but still manageable with a few plan and tooling decisions. Save
+                the audit and use it as a short action list for your team.
+              </p>
+            </>
+          )}
         </section>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -143,9 +183,19 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
 
           <form onSubmit={handleLeadSubmit} className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200/80">Save This Audit</p>
-            <h2 className="mt-4 text-2xl font-semibold">Email this summary to yourself</h2>
+            <h2 className="mt-4 text-2xl font-semibold">
+              {isHighSavings
+                ? 'Get this audit ready for follow-up'
+                : isLowSavings
+                  ? 'Save this and get future updates'
+                  : 'Email this summary to yourself'}
+            </h2>
             <p className="mt-3 text-slate-300">
-              Enter your details to keep a record of this audit and its savings estimate.
+              {isHighSavings
+                ? 'Enter your details to save the audit, email the summary, and keep the savings case ready for a deeper review.'
+                : isLowSavings
+                  ? 'Enter your details to save the audit and keep a record in case new optimizations apply later.'
+                  : 'Enter your details to keep a record of this audit and its savings estimate.'}
             </p>
 
             <div className="mt-6 space-y-4">
@@ -201,11 +251,19 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
                 type="submit"
                 className="w-full rounded-xl bg-credex-light px-4 py-3 text-base font-semibold text-black transition hover:bg-emerald-500"
               >
-                Save Audit Summary
+                {leadStatus === 'saving' ? 'Saving...' : isLowSavings ? 'Save Audit and Notify Me' : 'Save Audit Summary'}
               </button>
 
               {leadStatus === 'saved' && (
-                <p className="text-sm text-emerald-300">Your audit details have been saved.</p>
+                <p className="text-sm text-emerald-300">
+                  Your audit details were saved and the email flow is ready when your API keys are configured.
+                </p>
+              )}
+
+              {leadStatus === 'saved-local' && (
+                <p className="text-sm text-emerald-300">
+                  Your audit details were saved in this browser because the backend is not configured yet.
+                </p>
               )}
             </div>
           </form>

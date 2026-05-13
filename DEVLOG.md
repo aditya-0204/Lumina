@@ -1,141 +1,124 @@
-# DEVLOG - Lumina Development
+# DEVLOG - Lumina
 
-## Day 1 - May 7, 2026
+## Day 1 -- 2026-05-07
 
 **Hours worked:** 3
 
 **What I did:**
-- Initialized React + Vite project with Tailwind CSS
-- Set up package.json, linting, testing, and CI workflow
-- Built the landing page and basic app shell
-- Created the initial project structure and supporting docs
+- Initialized the React + Vite project and added Tailwind
+- Set up linting, testing, CI, and the initial repo structure
+- Built the landing page and basic routing flow into the audit experience
+- Created the first documentation files required by the assignment
 
 **What I learned:**
-- Vite keeps frontend iteration much faster than CRA for this kind of build sprint
-- A service-module structure makes it easier to grow business logic without bloating React components
+- Vite is a better fit than CRA for a short sprint because iteration is much faster
+- Splitting business logic into small services early makes later changes much safer
 
-**Blockers:**
-- None
+**Blockers / what I'm stuck on:**
+- None on Day 1
 
-**Plan for next day:**
-- Build the full audit input flow and pricing structure
-
----
-
-## Day 2 - May 8, 2026
+## Day 2 -- 2026-05-08
 
 **Hours worked:** 4
 
 **What I did:**
-- Built the multi-tool audit form for 8 AI tools
-- Added per-tool plan, spend, and seats inputs
-- Added team size and use case selection
-- Implemented localStorage persistence for form progress
-- Created centralized pricing constants and validation logic
-- Added lint/test/build fixes so the repo validates cleanly
+- Built the audit form for 8 tools with plan, spend, and seat inputs
+- Added team size and use case fields
+- Added local persistence so the form survives page refreshes
+- Centralized pricing constants and validation logic
+- Fixed the GitHub Actions lockfile issue so local and CI installs match
 
 **What I learned:**
-- Persisted form state greatly improves UX for longer audit forms
-- Pricing data is easier to maintain when separated from calculation logic
+- Long forms feel much safer when users can refresh without losing progress
+- Keeping pricing in constants instead of inline UI code makes the audit engine easier to evolve
 
-**Blockers:**
-- GitHub Actions initially failed because the repo was not tracking the lockfile needed by `npm ci`
+**Blockers / what I'm stuck on:**
+- GitHub Actions was failing until `package-lock.json` was tracked properly
 
-**Plan for next day:**
-- Implement the actual audit engine and a real results page
-
----
-
-## Day 3 - May 9, 2026
+## Day 3 -- 2026-05-09
 
 **Hours worked:** 5
 
 **What I did:**
-- Built the audit engine to calculate current spend, recommended spend, and savings
-- Added same-vendor plan-fit recommendations
-- Added cross-vendor recommendation logic for selected use cases
-- Replaced the temporary results page with a full breakdown screen
-- Added audit-engine tests and verified lint, tests, and build
+- Implemented the audit engine for current spend, savings, and recommendations
+- Added same-vendor plan-fit logic
+- Added cross-vendor alternatives for several use cases
+- Built the results page with totals and a per-tool breakdown
+- Added the first audit-engine tests
 
 **What I learned:**
-- Recommendation logic gets clearer when each candidate path is normalized into the same shape before ranking
-- The results page is much easier to reason about when totals and per-tool recommendations are separated visually
+- Recommendation logic is easier to debug when every candidate recommendation uses the same shape before sorting
+- The results page benefits from separating high-level totals from tool-level reasoning
 
-**Blockers:**
-- A test case initially assumed the cross-vendor recommendation would always win, but the actual ranking logic correctly preferred the highest-savings candidate
+**Blockers / what I'm stuck on:**
+- Test expectations initially assumed a different recommendation winner than the pricing logic actually produced
 
-**Plan for next day:**
-- Add summary generation and lead capture
+## Day 4 -- 2026-05-10
 
----
-
-## Day 4 - May 9, 2026
-
-**Hours worked:** 3
+**Hours worked:** 4
 
 **What I did:**
-- Added an async summary-generation flow to the results experience
-- Added a short summary service for the results screen
-- Added lead capture UI with email validation and honeypot field
-- Added local lead persistence for the save flow
-- Added tests for summary and lead-capture services
+- Added executive summary generation on top of the audit output
+- Added lead capture with email validation and a honeypot field
+- Added local lead persistence as a temporary fallback
+- Added tests for summary and lead-capture behavior
 
 **What I learned:**
-- Keeping the summary logic separate makes the audit calculations easier to maintain
-- Lead capture is smoother when shown after value is delivered rather than before the audit
+- It is easier to keep the audit engine trustworthy if the written summary is generated after the numeric recommendation pass
+- Capturing leads after showing value feels better than forcing a gate before the results
 
-**Blockers:**
-- Supabase and transactional email are still pending, so the current implementation stores lead data locally only
+**Blockers / what I'm stuck on:**
+- Real database and email delivery were still pending, so the flow had to start with local fallbacks
 
-**Plan for next day:**
-- Add share links and keep expanding test coverage
+## Day 5 -- 2026-05-11
 
----
-
-## Day 5 - May 10, 2026
-
-**Hours worked:** 3
+**Hours worked:** 4
 
 **What I did:**
-- Added a share service for saving PII-safe audit snapshots
-- Added share-link creation from the results page
-- Added URL-based shared audit loading in the app shell
-- Added tests for the share service
-- Re-ran lint, tests, and production build after the share flow changes
+- Added shareable audit links with PII stripped from the shared payload
+- Added shared-audit loading by URL
+- Added share-service tests
+- Expanded the audit-engine test suite to five cases
 
 **What I learned:**
-- Keeping shared snapshots separate from lead data makes it easier to control what is safe to expose
-- URL-driven state is simple to add when the shared payload is already normalized
+- Shared payloads should be normalized separately from lead records so it is obvious what can be public
+- URL-based state is simple to support once the payload is already stable
 
-**Blockers:**
-- Shared audits still live in browser storage, so links are only durable on the same machine until backend persistence is added
+**Blockers / what I'm stuck on:**
+- Browser-only sharing works for demos but not for a real public multi-device share flow
 
-**Plan for next day:**
-- Improve the public-facing experience and keep the project ready for deployment
+## Day 6 -- 2026-05-12
 
----
-
-## Day 6 - May 12, 2026
-
-**Hours worked:** 3
+**Hours worked:** 4
 
 **What I did:**
-- Updated app metadata for the Lumina name and current product description
-- Refined the visual system with stronger typography and background treatment
-- Rebuilt the landing page with a clearer hero, sample snapshot, and stronger explanation of the product flow
-- Cleaned the results page presentation and fixed lingering text rendering issues
-- Re-ran lint, tests, and production build after the polish pass
+- Polished the landing page and metadata
+- Improved the results-page presentation
+- Added a PDF-friendly print flow
+- Prepared deployment configuration for Vercel and Netlify
+- Cleaned the docs so the repo reads more like a finished submission
 
 **What I learned:**
-- The first screen needs to communicate trust and clarity immediately, especially for a finance-oriented tool
-- Metadata and naming consistency matter because small leftover details can make the product feel unfinished
+- Finance-oriented products need clarity and trust on the first screen, not just feature completeness
+- A print-friendly export is a useful shortcut for teams that want to share results internally
 
-**Blockers:**
-- Deployment has not been configured yet, so the app is polished but not published
+**Blockers / what I'm stuck on:**
+- Public deployment still depends on an external hosting account
 
-**Plan for next day:**
-- Finalize deployment prep, run a last documentation pass, and do submission cleanup
+## Day 7 -- 2026-05-13
 
----
+**Hours worked:** 5
 
-## Day 7 - To be filled
+**What I did:**
+- Added serverless route scaffolding for Anthropic summaries, Supabase storage, and Resend email
+- Added a Supabase schema file and environment example
+- Updated the results experience for high-savings and low-savings cases
+- Tightened CI by making lint failures block the workflow
+- Finished the remaining assignment docs and submission support files
+
+**What I learned:**
+- The repo can be made substantially more complete without overcomplicating the frontend if backend integration points are cleanly isolated
+- “Done” for a project like this is mostly about reducing ambiguity: docs, tests, environments, and failure behavior all matter
+
+**Blockers / what I'm stuck on:**
+- Live database writes, LLM responses, email delivery, screenshots, and a public URL still require external keys or hosting-account actions outside this local repo

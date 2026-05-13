@@ -1,58 +1,65 @@
-# TESTS.md - Current Coverage
+# TESTS.md
 
-All tests run with:
+Run the automated suite with:
 
 ```bash
 npm run test -- --run
 ```
 
-## Current Test Files
+## Automated Test Files
 
 ### `src/services/auditService.test.js`
-Covers:
-- plan-fit recommendation logic
-- cross-vendor switch logic
-- keep-current scenarios when no cheaper practical option exists
+
+This file contains the assignment's required audit-engine coverage. Current cases:
+
+1. Recommends lower-fit plans for small teams
+2. Suggests a cross-vendor alternative for coding workflows
+3. Keeps the current tool when there is no cheaper practical option
+4. Aggregates monthly and annual savings across multiple tools
+5. Sorts the biggest savings opportunities first
 
 ### `src/services/pricingService.test.js`
+
 Covers:
-- monthly pricing lookups
-- pricing metadata access
+
+- monthly pricing lookup
+- annual pricing lookup behavior
 - per-user plan detection
 
 ### `src/services/summaryService.test.js`
+
 Covers:
-- summary construction
+
+- fallback summary content generation
 - async summary response shape
 
 ### `src/services/leadCaptureService.test.js`
+
 Covers:
-- lead-form validation
-- payload construction with audit context
-- localStorage persistence behavior
+
+- email validation
+- honeypot validation
+- payload construction
+- local browser persistence fallback
 
 ### `src/services/shareService.test.js`
+
 Covers:
-- shareable audit snapshot storage
-- shared audit retrieval by ID
+
+- PII-safe shared audit storage
+- shared audit retrieval
 - share URL creation
 
 ### `src/utils/validators.test.js`
+
 Covers:
-- required audit form fields
+
+- required field validation
+- positive spend and seat validation
 - valid form acceptance
-- invalid spend and seat handling
 
-## Current Coverage Notes
+## Notes
 
-- Core service logic for pricing, audit, summary, lead capture, sharing, and validation is covered
-- UI component rendering tests are not added yet
-- Shared audits are tested at the service layer, not the component layer
-- Future Supabase integration will need API-layer or integration tests
-
-## Recommended Next Tests
-
-1. Component tests for `AuditForm.jsx`
-2. Component tests for `AuditResults.jsx`
-3. Integration tests for Supabase-backed lead persistence
-4. Integration tests for persisted shared audits
+- The most important assignment requirement was a minimum of 5 audit-engine tests, and that requirement is now satisfied in `src/services/auditService.test.js`.
+- The current suite is service-layer focused because the main risk in this project is recommendation correctness rather than component rendering details.
+- When the live Supabase and email integrations are connected, API integration tests should be the next addition.

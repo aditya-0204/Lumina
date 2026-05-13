@@ -52,3 +52,45 @@ export const getSharedAudit = (shareId) => {
 export const buildShareUrl = (shareId, origin) => {
   return `${origin}?share=${shareId}`
 }
+
+export const createShareableAuditLink = async (auditResults, auditData, origin) => {
+  const audit = buildShareableAudit(auditResults, auditData)
+
+  if (typeof fetch === 'function') {
+    try {
+      const response = await fetch('/api/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ audit }),
+      })
+
+      if (response.ok) {
+        const payload = await response.json()
+        return buildShareUrl(payload.shareId, origin)
+      }
+    } catch {
+      // Fall through to local storage.
+    }
+  }
+
+  return buildShareUrl(saveShareableAudit(auditResults, auditData), origin)
+}
+
+export const resolveSharedAudit = async (shareId) => {
+  if (typeof fetch === 'function') {
+    try {
+      const response = await fetch(`/api/share?id=${encodeURIComponent(shareId)}`)
+
+      if (response.ok) {
+        const payload = await response.json()
+        return payload.audit
+      }
+    } catch {
+      // Fall through to local storage.
+    }
+  }
+
+  return getSharedAudit(shareId)
+}
