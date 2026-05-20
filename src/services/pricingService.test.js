@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getMonthlyPrice, getPricingMeta, isPricePerUser } from './pricingService'
+import { clonePricingCatalog, getMonthlyPrice, getPricingMeta, isPricePerUser } from './pricingService'
 
 describe('pricingService', () => {
   it('returns known monthly prices', () => {
@@ -14,5 +14,13 @@ describe('pricingService', () => {
   it('marks per-user plans correctly', () => {
     expect(isPricePerUser('claude', 'Team')).toBe(true)
     expect(isPricePerUser('cursor', 'Pro')).toBe(false)
+  })
+
+  it('can resolve prices from a supplied pricing snapshot', () => {
+    const snapshot = clonePricingCatalog()
+    snapshot.cursor.Pro.monthly = 27
+
+    expect(getMonthlyPrice('cursor', 'Pro', snapshot)).toBe(27)
+    expect(getMonthlyPrice('cursor', 'Pro')).toBe(20)
   })
 })
