@@ -30,7 +30,10 @@ const createLeadForm = () => ({
 
 export function AuditResults({ data, auditData, onBack, onEdit }) {
   const highestSavingsTool = data.tools[0]
-  const [leadForm, setLeadForm] = useState(createLeadForm)
+  const [leadForm, setLeadForm] = useState(() => ({
+    ...createLeadForm(),
+    email: auditData?.email ?? '',
+  }))
   const [leadErrors, setLeadErrors] = useState({})
   const [leadStatus, setLeadStatus] = useState('idle')
   const [shareStatus, setShareStatus] = useState('idle')
@@ -54,7 +57,7 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
 
     setLeadStatus('saving')
     const payload = buildLeadPayload(leadForm, data)
-    const response = await submitLeadCapture(payload, data)
+    const response = await submitLeadCapture(payload, data, auditData)
     setLeadErrors({})
     setLeadStatus(response.mode === 'local' ? 'saved-local' : 'saved')
     setLeadForm(createLeadForm())

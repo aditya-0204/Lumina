@@ -1,6 +1,12 @@
 export const validateAuditForm = (formData) => {
   const errors = {}
 
+  if (!formData.email?.trim()) {
+    errors.email = 'Work email is required'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    errors.email = 'Enter a valid email address'
+  }
+
   const selectedTools = Object.entries(formData.tools || {}).filter(
     ([, tool]) => tool && tool.plan,
   )
