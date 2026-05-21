@@ -177,10 +177,8 @@ export function AuditForm({ onSubmit, onBack, isSubmitting = false }) {
         <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1.5fr_0.9fr]">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <h2 className="mb-2 text-2xl font-semibold text-slate-900">0. Where should we save this audit?</h2>
-              <p className="mb-4 text-slate-600">
-                Round 2 stores each completed audit so pricing changes can trigger a re-audit later.
-              </p>
+              <h2 className="mb-2 text-2xl font-semibold text-slate-900">0. Who should receive this audit?</h2>
+              <p className="mb-4 text-slate-600">Enter your work email so we can send and save your audit.</p>
               <label className="mb-2 block text-sm font-medium text-slate-700">Work Email</label>
               <input
                 type="email"

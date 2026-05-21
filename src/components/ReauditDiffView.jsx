@@ -32,7 +32,7 @@ export function ReauditDiffView({ data, onBack }) {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300/80">Re-audit Diff</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300/80">Audit Comparison</p>
             <h1 className="mt-2 text-4xl font-bold">Pricing changes affected this audit</h1>
             <p className="mt-3 max-w-3xl text-slate-300">
               Audit <span className="font-mono text-slate-200">{data.audit.id}</span> was originally saved on{' '}
@@ -105,7 +105,7 @@ export function ReauditDiffView({ data, onBack }) {
         <section className="mt-8 rounded-[2rem] border border-amber-300/20 bg-gradient-to-r from-amber-300/10 via-white/5 to-emerald-300/10 p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200/80">Detected Pricing Changes</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200/80">Pricing Updates</p>
               <h2 className="mt-3 text-2xl font-semibold">What changed in the catalog</h2>
             </div>
             <button
@@ -141,7 +141,7 @@ export function ReauditDiffView({ data, onBack }) {
 
         <section className="mt-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Recommendation Diff By Tool</h2>
+            <h2 className="text-2xl font-semibold">Recommendation Changes By Tool</h2>
             <p className="text-sm text-slate-400">{visibleToolDiffs.length} rows shown</p>
           </div>
 
