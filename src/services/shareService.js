@@ -11,10 +11,6 @@ const writeSharedAudits = (sharedAudits) => {
   window.localStorage.setItem(SHARED_AUDITS_STORAGE_KEY, JSON.stringify(sharedAudits))
 }
 
-export const createShareId = () => {
-  return `share_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
-}
-
 export const buildShareableAudit = (auditResults, auditData) => {
   const toolCount = Object.keys(auditData.tools || {}).length
 
@@ -37,7 +33,7 @@ export const buildShareableAudit = (auditResults, auditData) => {
 }
 
 export const saveShareableAudit = (auditResults, auditData) => {
-  const shareId = createShareId()
+  const shareId = auditResults.auditId
   const sharedAudits = readSharedAudits()
   sharedAudits[shareId] = buildShareableAudit(auditResults, auditData)
   writeSharedAudits(sharedAudits)

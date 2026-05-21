@@ -1,6 +1,8 @@
 import { sendJson, methodNotAllowed, readJsonBody } from './_lib/http.js'
-import { insertSupabaseRow, sendLeadEmail, hasResendConfig, hasSupabaseConfig } from './_lib/integrations.js'
+import { insertSupabaseRow, sendLeadEmail, hasResendConfig, hasSupabaseConfig, upsertSupabaseRow } from './_lib/integrations.js'
 import { isRateLimited } from './_lib/rateLimit.js'
+import { buildPricingSnapshot, buildStoredAuditRecord } from '../src/services/reauditService.js'
+import { buildShareableAudit } from '../src/services/shareService.js'
 
 const buildEmailHtml = (lead, auditResults) => {
   return [
@@ -26,10 +28,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { lead, auditResults } = await readJsonBody(req)
+    const { lead, auditResults, auditInput } = await readJsonBody(req)
 
-    if (!lead || !auditResults) {
-      sendJson(res, 400, { error: 'lead and auditResults are required' })
+    if (!lead || !auditResults || !auditInput) {
+      sendJson(res, 400, { error: 'lead, auditResults, and auditInput are required' })
       return
     }
 
@@ -42,11 +44,18 @@ export default async function handler(req, res) {
     let emailed = false
 
     if (hasSupabaseConfig()) {
-      await insertSupabaseRow('audits', {
-        id: auditResults.auditId,
-        payload: auditResults,
-        created_at: auditResults.timestamp,
+      const sharedAudit = buildShareableAudit(auditResults, auditInput)
+      const storedAudit = buildStoredAuditRecord({
+        auditId: auditResults.auditId,
+        email: lead.email,
+        auditInput,
+        auditResult: auditResults,
+        pricingSnapshot: buildPricingSnapshot(),
+        sharedAudit,
+        createdAt: auditResults.timestamp,
       })
+
+      await upsertSupabaseRow('audits', storedAudit, 'id')
 
       await insertSupabaseRow('leads', {
         id: lead.id,
@@ -75,6 +84,7 @@ export default async function handler(req, res) {
     sendJson(res, 200, {
       stored,
       emailed,
+      auditId: auditResults.auditId,
       mode: stored || emailed ? 'live' : 'mock',
     })
   } catch (error) {
