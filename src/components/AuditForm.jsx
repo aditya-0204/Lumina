@@ -169,7 +169,7 @@ export function AuditForm({ onSubmit, onBack, isSubmitting = false }) {
             </p>
           </div>
           <div className="rounded-2xl border border-emerald-200 bg-white/90 px-5 py-4 shadow-sm">
-            <p className="text-sm text-slate-500">Progress saved locally</p>
+            <p className="text-sm text-slate-500">Progress saved automatically</p>
             <p className="text-2xl font-semibold text-slate-900">{selectedToolCount} tools selected</p>
           </div>
         </div>

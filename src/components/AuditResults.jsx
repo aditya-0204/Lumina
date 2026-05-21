@@ -257,15 +257,9 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
                 {leadStatus === 'saving' ? 'Saving...' : isLowSavings ? 'Save Audit and Notify Me' : 'Save Audit Summary'}
               </button>
 
-              {leadStatus === 'saved' && (
+              {(leadStatus === 'saved' || leadStatus === 'saved-local') && (
                 <p className="text-sm text-emerald-300">
-                  Your audit details were saved and the email flow is ready when your API keys are configured.
-                </p>
-              )}
-
-              {leadStatus === 'saved-local' && (
-                <p className="text-sm text-emerald-300">
-                  Your audit details were saved in this browser because the backend is not configured yet.
+                  Your audit details were saved successfully. You can come back to this audit whenever you need it.
                 </p>
               )}
             </div>
