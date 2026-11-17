@@ -30,3 +30,15 @@ export function methodNotAllowed(res, allowedMethods) {
   res.setHeader('Allow', allowedMethods.join(', '))
   sendJson(res, 405, { error: 'Method not allowed' })
 }
+
+export function getRequestOrigin(req) {
+  const forwardedProto = req.headers['x-forwarded-proto']
+  const forwardedHost = req.headers['x-forwarded-host']
+  const host = forwardedHost || req.headers.host
+
+  if (!host) {
+    return process.env.APP_ORIGIN || 'http://localhost:5173'
+  }
+
+  return `${forwardedProto || 'https'}://${host}`
+}

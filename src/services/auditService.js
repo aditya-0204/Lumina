@@ -1,4 +1,5 @@
 import { getMonthlyPrice, isPricePerUser } from './pricingService'
+import { PRICING } from '../constants/pricing'
 import { TOOLS } from '../constants/tools'
 
 const TEAM_SIZE_ESTIMATES = {
@@ -68,12 +69,12 @@ const USE_CASE_ALTERNATIVES = {
   },
 }
 
-export const calculateAudit = (formData) => {
+export const calculateAudit = (formData, pricingCatalog = PRICING, options = {}) => {
   const { tools: userTools, teamSize, useCase } = formData
   const teamSizeEstimate = TEAM_SIZE_ESTIMATES[teamSize] || 10
 
   const toolAnalyses = Object.entries(userTools).map(([toolKey, toolData]) =>
-    analyzeToolSpend(toolKey, toolData, teamSize, teamSizeEstimate, useCase),
+    analyzeToolSpend(toolKey, toolData, teamSize, teamSizeEstimate, useCase, pricingCatalog),
   )
 
   const totalMonthlySpend = toolAnalyses.reduce((sum, tool) => sum + tool.currentMonthlySpend, 0)
@@ -85,8 +86,8 @@ export const calculateAudit = (formData) => {
     .sort((a, b) => b.monthlySavings - a.monthlySavings)
 
   return {
-    auditId: generateAuditId(),
-    timestamp: new Date().toISOString(),
+    auditId: options.auditId ?? generateAuditId(),
+    timestamp: options.timestamp ?? new Date().toISOString(),
     teamSize: { range: teamSize, estimate: teamSizeEstimate },
     useCase,
     tools: toolAnalyses.sort((a, b) => b.monthlySavings - a.monthlySavings),
@@ -99,15 +100,23 @@ export const calculateAudit = (formData) => {
   }
 }
 
-function analyzeToolSpend(toolKey, toolData, teamSizeRange, teamSizeEstimate, useCase) {
+function analyzeToolSpend(toolKey, toolData, teamSizeRange, teamSizeEstimate, useCase, pricingCatalog) {
   const tool = TOOLS[toolKey]
   const seats = Number.parseInt(toolData.seats, 10) || 1
   const currentMonthlySpend = Number(toolData.spend) || 0
   const currentAnnualSpend = currentMonthlySpend * 12
 
   const candidates = [
-    buildSameVendorCandidate(toolKey, toolData.plan, teamSizeRange, seats, currentMonthlySpend, teamSizeEstimate),
-    ...buildAlternativeCandidates(toolKey, useCase, seats, currentMonthlySpend),
+    buildSameVendorCandidate(
+      toolKey,
+      toolData.plan,
+      teamSizeRange,
+      seats,
+      currentMonthlySpend,
+      teamSizeEstimate,
+      pricingCatalog,
+    ),
+    ...buildAlternativeCandidates(toolKey, useCase, seats, currentMonthlySpend, pricingCatalog),
   ].filter(Boolean)
 
   const bestCandidate = candidates
@@ -150,11 +159,19 @@ function analyzeToolSpend(toolKey, toolData, teamSizeRange, teamSizeEstimate, us
   }
 }
 
-function buildSameVendorCandidate(toolKey, currentPlan, teamSizeRange, seats, currentMonthlySpend, teamSizeEstimate) {
+function buildSameVendorCandidate(
+  toolKey,
+  currentPlan,
+  teamSizeRange,
+  seats,
+  currentMonthlySpend,
+  teamSizeEstimate,
+  pricingCatalog,
+) {
   const recommendedPlan = PLAN_FIT_RULES[toolKey]?.[teamSizeRange]
   if (!recommendedPlan || recommendedPlan === currentPlan) return null
 
-  const recommendedMonthlySpend = calculatePlanCost(toolKey, recommendedPlan, seats)
+  const recommendedMonthlySpend = calculatePlanCost(toolKey, recommendedPlan, seats, pricingCatalog)
   if (recommendedMonthlySpend === null) return null
 
   return {
@@ -168,12 +185,12 @@ function buildSameVendorCandidate(toolKey, currentPlan, teamSizeRange, seats, cu
   }
 }
 
-function buildAlternativeCandidates(toolKey, useCase, seats, currentMonthlySpend) {
+function buildAlternativeCandidates(toolKey, useCase, seats, currentMonthlySpend, pricingCatalog) {
   const alternatives = USE_CASE_ALTERNATIVES[useCase]?.[toolKey] ?? []
 
   return alternatives
     .map((alternative) => {
-      const recommendedMonthlySpend = calculatePlanCost(alternative.toolKey, alternative.plan, seats)
+      const recommendedMonthlySpend = calculatePlanCost(alternative.toolKey, alternative.plan, seats, pricingCatalog)
       if (recommendedMonthlySpend === null) return null
 
       return {
@@ -189,10 +206,10 @@ function buildAlternativeCandidates(toolKey, useCase, seats, currentMonthlySpend
     .filter(Boolean)
 }
 
-function calculatePlanCost(toolKey, plan, seats) {
-  const monthlyPrice = getMonthlyPrice(toolKey, plan)
+function calculatePlanCost(toolKey, plan, seats, pricingCatalog) {
+  const monthlyPrice = getMonthlyPrice(toolKey, plan, pricingCatalog)
   if (monthlyPrice === null || monthlyPrice === undefined) return null
-  return roundCurrency(isPricePerUser(toolKey, plan) ? monthlyPrice * seats : monthlyPrice)
+  return roundCurrency(isPricePerUser(toolKey, plan, pricingCatalog) ? monthlyPrice * seats : monthlyPrice)
 }
 
 function buildAuditSummary(totalMonthlySavings, recommendations) {

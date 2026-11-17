@@ -4,6 +4,7 @@ import { getMonthlyPrice, getPricingMeta, isPricePerUser } from '../services/pri
 import { validateAuditForm } from '../utils/validators'
 
 const createEmptyForm = () => ({
+  email: '',
   tools: {},
   teamSize: '',
   useCase: 'Mixed',
@@ -34,6 +35,7 @@ const normalizeLoadedForm = (savedForm) => {
     ...createEmptyForm(),
     ...savedForm,
     tools,
+    email: typeof savedForm?.email === 'string' ? savedForm.email : '',
     teamSize: TEAM_SIZE_RANGES.some((range) => range.value === savedForm?.teamSize)
       ? savedForm.teamSize
       : '',
@@ -167,13 +169,29 @@ export function AuditForm({ onSubmit, onBack, isSubmitting = false }) {
             </p>
           </div>
           <div className="rounded-2xl border border-emerald-200 bg-white/90 px-5 py-4 shadow-sm">
-            <p className="text-sm text-slate-500">Progress saved locally</p>
+            <p className="text-sm text-slate-500">Progress saved automatically</p>
             <p className="text-2xl font-semibold text-slate-900">{selectedToolCount} tools selected</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1.5fr_0.9fr]">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="mb-2 text-2xl font-semibold text-slate-900">0. Who should receive this audit?</h2>
+              <p className="mb-4 text-slate-600">Enter your work email so we can send and save your audit.</p>
+              <label className="mb-2 block text-sm font-medium text-slate-700">Work Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
+                className={`w-full rounded-md border bg-white px-3 py-2 text-slate-900 ${
+                  errors.email ? 'border-red-500' : 'border-slate-300'
+                }`}
+                placeholder="you@company.com"
+              />
+              {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+            </div>
+
             <h2 className="mb-2 text-2xl font-semibold text-slate-900">1. Which AI tools does your team use?</h2>
             <p className="mb-6 text-slate-600">
               Pick every tool you actively pay for today. We will use your entered monthly spend as the source of truth.
@@ -342,6 +360,7 @@ export function AuditForm({ onSubmit, onBack, isSubmitting = false }) {
               <h2 className="mb-4 text-xl font-semibold">Audit Preview</h2>
               <div className="space-y-3 text-sm text-slate-300">
                 <p>{selectedToolCount} tools selected</p>
+                <p>{formData.email ? `Audit owner: ${formData.email}` : 'Work email not entered yet'}</p>
                 <p>{formData.teamSize ? `Team size bucket: ${formData.teamSize}` : 'Team size not selected yet'}</p>
                 <p>{formData.useCase ? `Primary use case: ${formData.useCase}` : 'Use case not selected yet'}</p>
               </div>

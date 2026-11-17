@@ -30,7 +30,10 @@ const createLeadForm = () => ({
 
 export function AuditResults({ data, auditData, onBack, onEdit }) {
   const highestSavingsTool = data.tools[0]
-  const [leadForm, setLeadForm] = useState(createLeadForm)
+  const [leadForm, setLeadForm] = useState(() => ({
+    ...createLeadForm(),
+    email: auditData?.email ?? '',
+  }))
   const [leadErrors, setLeadErrors] = useState({})
   const [leadStatus, setLeadStatus] = useState('idle')
   const [shareStatus, setShareStatus] = useState('idle')
@@ -54,7 +57,7 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
 
     setLeadStatus('saving')
     const payload = buildLeadPayload(leadForm, data)
-    const response = await submitLeadCapture(payload, data)
+    const response = await submitLeadCapture(payload, data, auditData)
     setLeadErrors({})
     setLeadStatus(response.mode === 'local' ? 'saved-local' : 'saved')
     setLeadForm(createLeadForm())
@@ -254,15 +257,9 @@ export function AuditResults({ data, auditData, onBack, onEdit }) {
                 {leadStatus === 'saving' ? 'Saving...' : isLowSavings ? 'Save Audit and Notify Me' : 'Save Audit Summary'}
               </button>
 
-              {leadStatus === 'saved' && (
+              {(leadStatus === 'saved' || leadStatus === 'saved-local') && (
                 <p className="text-sm text-emerald-300">
-                  Your audit details were saved and the email flow is ready when your API keys are configured.
-                </p>
-              )}
-
-              {leadStatus === 'saved-local' && (
-                <p className="text-sm text-emerald-300">
-                  Your audit details were saved in this browser because the backend is not configured yet.
+                  Your audit details were saved successfully. You can come back to this audit whenever you need it.
                 </p>
               )}
             </div>

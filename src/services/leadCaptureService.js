@@ -42,7 +42,7 @@ export const saveLeadCapture = (payload) => {
   return payload
 }
 
-export const submitLeadCapture = async (payload, auditResults) => {
+export const submitLeadCapture = async (payload, auditResults, auditInput) => {
   if (typeof fetch !== 'function') {
     saveLeadCapture(payload)
     return { mode: 'local' }
@@ -57,6 +57,7 @@ export const submitLeadCapture = async (payload, auditResults) => {
       body: JSON.stringify({
         lead: payload,
         auditResults,
+        auditInput,
       }),
     })
 

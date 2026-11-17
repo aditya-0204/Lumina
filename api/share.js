@@ -1,10 +1,6 @@
 import { sendJson, methodNotAllowed, readJsonBody } from './_lib/http.js'
-import { getSupabaseRows, hasSupabaseConfig, insertSupabaseRow } from './_lib/integrations.js'
+import { getSupabaseRows, hasSupabaseConfig, upsertSupabaseRow } from './_lib/integrations.js'
 import { isRateLimited } from './_lib/rateLimit.js'
-
-const createShareId = () => {
-  return `share_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
-}
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -63,14 +59,14 @@ export default async function handler(req, res) {
       return
     }
 
-    const shareId = createShareId()
+    const shareId = audit.auditId
 
-    await insertSupabaseRow('shared_audits', {
+    await upsertSupabaseRow('shared_audits', {
       share_id: shareId,
       audit_id: audit.auditId,
       payload: audit,
       created_at: new Date().toISOString(),
-    })
+    }, 'share_id')
 
     sendJson(res, 200, { shareId })
   } catch (error) {

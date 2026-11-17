@@ -28,6 +28,29 @@ export async function insertSupabaseRow(table, payload) {
   return response.json()
 }
 
+export async function upsertSupabaseRow(table, payload, onConflict) {
+  if (!hasSupabaseConfig()) {
+    throw new Error('Supabase is not configured')
+  }
+
+  const conflictQuery = onConflict ? `?on_conflict=${encodeURIComponent(onConflict)}` : ''
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/${table}${conflictQuery}`, {
+    method: 'POST',
+    headers: {
+      ...SUPABASE_HEADERS(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      Prefer: 'return=representation,resolution=merge-duplicates',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`Supabase upsert failed: ${text}`)
+  }
+
+  return response.json()
+}
+
 export async function getSupabaseRows(table, query) {
   if (!hasSupabaseConfig()) {
     throw new Error('Supabase is not configured')
@@ -41,6 +64,26 @@ export async function getSupabaseRows(table, query) {
   if (!response.ok) {
     const text = await response.text()
     throw new Error(`Supabase read failed: ${text}`)
+  }
+
+  return response.json()
+}
+
+export async function patchSupabaseRows(table, query, payload) {
+  if (!hasSupabaseConfig()) {
+    throw new Error('Supabase is not configured')
+  }
+
+  const searchParams = new URLSearchParams(query)
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/${table}?${searchParams.toString()}`, {
+    method: 'PATCH',
+    headers: SUPABASE_HEADERS(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`Supabase patch failed: ${text}`)
   }
 
   return response.json()
